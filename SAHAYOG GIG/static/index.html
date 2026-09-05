@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sahayog-Gig — Cooperative Ecosystem Prototype</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Quick Demo Role Switcher Bar (Like TrustForge & Pratyaksh) -->
+  <header class="demo-switch-bar">
+    <div class="brand">
+      <span class="logo-icon">🤝</span>
+      <strong>Sahayog<span>Gig</span></strong>
+      <span class="badge-tag">PS-26089 Live Prototype</span>
+    </div>
+    <div class="role-selector">
+      <span>Switch View:</span>
+      <button class="role-btn active" id="btnRoleCustomer" onclick="setRole('customer')">👤 Customer POV</button>
+      <button class="role-btn" id="btnRoleWorker" onclick="setRole('worker')">👩‍🔧 Worker POV (Priya)</button>
+      <button class="role-btn" id="btnRoleAdmin" onclick="setRole('admin')">🏛️ Co-op Admin</button>
+    </div>
+  </header>
+
+  <!-- ================= VIEW 1: CUSTOMER POV ================= -->
+  <main id="viewCustomer" class="view-panel active">
+    <div class="hero-strip">
+      <h2>Book Trusted Neighborhood Services</h2>
+      <p>Worker-owned cooperative · 96% pay kept by local workers · Hyperlocal &lt;2.0 km matching</p>
+    </div>
+
+    <div class="container main-grid">
+      <!-- Left: Service & Worker Selection -->
+      <section class="card">
+        <h3>1. Available Verified Services</h3>
+        <div class="services-list" id="servicesContainer">
+          <div class="service-pill active" onclick="selectService('Home Cleaning', 299)">🧹 Home Cleaning (₹299)</div>
+          <div class="service-pill" onclick="selectService('Plumbing Repair', 249)">🔧 Plumbing Repair (₹249)</div>
+          <div class="service-pill" onclick="selectService('Electrical Work', 299)">⚡ Electrical Work (₹299)</div>
+        </div>
+
+        <h3 style="margin-top: 1.5rem;">2. Nearby Cooperative Workers (&lt;2 km)</h3>
+        <div class="workers-cards" id="workersContainer">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- Right: Transparent Escrow Checkout & Live Order Status -->
+      <section class="card">
+        <h3>3. Transparent Booking & Escrow</h3>
+        <form id="bookingForm" onsubmit="handleCustomerBooking(event)">
+          <div class="form-group">
+            <label>Customer Name</label>
+            <input type="text" id="custName" value="Rahul Deshmukh" required />
+          </div>
+          <div class="form-group">
+            <label>Contact Number</label>
+            <input type="tel" id="custPhone" value="+91 98220 12345" required />
+          </div>
+          <div class="form-group">
+            <label>Apartment / Society Address</label>
+            <input type="text" id="custAddress" value="Flat 402, Green Acres RWA, Sector 4" required />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Service Date</label>
+              <input type="date" id="custDate" required />
+            </div>
+            <div class="form-group">
+              <label>Time Window</label>
+              <select id="custSlot">
+                <option>09:00 AM - 11:00 AM</option>
+                <option>11:00 AM - 01:00 PM</option>
+                <option>02:00 PM - 04:00 PM</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Escrow Calculation (Anti-Exploitation Proof) -->
+          <div class="escrow-box">
+            <div class="escrow-row"><span>Service Base Charge:</span><strong id="priceBase">₹299</strong></div>
+            <div class="escrow-row highlight"><span>Co-op Operations Fee (Flat 4%):</span><strong id="priceCoop">+ ₹12</strong></div>
+            <div class="escrow-row"><span>Direct Worker Retention (96%):</span><strong style="color:var(--accent)" id="priceWorker">₹287</strong></div>
+            <div class="escrow-divider"></div>
+            <div class="escrow-row total"><span>Total Payable (UPI Escrow):</span><strong id="priceTotal">₹311</strong></div>
+          </div>
+
+          <button type="submit" class="btn-primary" id="btnSubmitBooking">Lock in UPI Escrow & Dispatch</button>
+        </form>
+
+        <!-- Customer Live Job Tracker Status -->
+        <div id="customerLiveTracker" class="live-tracker-box hidden">
+          <h4>🔴 Live Order Status</h4>
+          <p>Booking ID: <strong id="trackId">#SG1001</strong></p>
+          <div class="status-badge" id="trackStatusBadge">WAITING FOR WORKER ACCEPTANCE</div>
+          <p class="tracker-note" id="trackNote">The request has been dispatched to the nearest cooperative member. Toggle to <strong>Worker POV</strong> to accept!</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- ================= VIEW 2: WORKER POV ================= -->
+  <main id="viewWorker" class="view-panel">
+    <div class="worker-dashboard-head">
+      <div class="worker-profile-card">
+        <div class="worker-avatar">👩‍🔧</div>
+        <div>
+          <h2>Priya Sharma <span class="badge-verified">✓ e-Shram Verified</span></h2>
+          <p>Trade: Cleaning Expert · Sahayog Co-op ID: #MH-0429</p>
+        </div>
+      </div>
+      <div class="worker-stats-grid">
+        <div class="stat-card">
+          <span>Net Take-Home</span>
+          <strong id="workerNetEarnings">₹14,352</strong>
+          <small>96% of earnings kept</small>
+        </div>
+        <div class="stat-card">
+          <span>Jobs Completed</span>
+          <strong id="workerJobsCount">48</strong>
+          <small>4.9/5 Rating</small>
+        </div>
+        <div class="stat-card">
+          <span>Health Safety Pool</span>
+          <strong>₹1,240</strong>
+          <small>Patronage Dividend</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="margin-top: 2rem;">
+      <section class="card">
+        <div class="section-title-row">
+          <h3>⚡ Real-Time Job Dispatch Feed</h3>
+          <span class="live-pill">🟢 Live Stream Active</span>
+        </div>
+        <p class="text-muted">Instant tasks dispatched within your 2.0 km operational geofence.</p>
+        <div id="workerJobAlerts" class="job-alerts-list">
+          <!-- Dynamically populated from SQLite -->
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- ================= VIEW 3: ADMIN / CO-OP GOVERNANCE POV ================= -->
+  <main id="viewAdmin" class="view-panel">
+    <div class="container" style="margin-top: 2rem;">
+      <div class="card">
+        <h3>🏛️ Cooperative Governance & Escrow Audit Ledger</h3>
+        <p class="text-muted">Transparent relational ledger verifying 96% worker payout and 4% platform pool.</p>
+        <div class="table-responsive">
+          <table class="ledger-table">
+            <thead>
+              <tr>
+                <th>Booking ID</th>
+                <th>Service</th>
+                <th>Customer</th>
+                <th>Gross Paid</th>
+                <th>Co-op 4% Pool</th>
+                <th>Worker 96% Payout</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="adminLedgerBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
